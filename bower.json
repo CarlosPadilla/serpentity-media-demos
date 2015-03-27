@@ -1,0 +1,27 @@
+{
+  "name": "serpentity-media-demos",
+  "version": "0.1.0",
+  "homepage": "https://github.com/benbeltran/serpentity-media-demos",
+  "authors": [
+    "Ben Beltran <ben@nsovocal.com>"
+  ],
+  "description": "Media demos with serpentity",
+  "keywords": [
+    "media",
+    "entity",
+    "serpentity"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "serpentity": "0.1.x",
+    "neon": "*"
+  }
+}
