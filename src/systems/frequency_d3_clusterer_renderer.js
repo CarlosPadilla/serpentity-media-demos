@@ -1,9 +1,12 @@
-Class(App.Systems, "FrequencyD3Renderer").inherits(Serpentity.System)({
+Class(App.Systems, "FrequencyD3ClustererRenderer").inherits(Serpentity.System)({
   prototype : {
     _palette : null,
     analysers : null,
     init : function init(config) {
       var property;
+
+      this._clusterer = new Clusterer();
+      this._clusterer.metric = Clusterer.Metrics.Slink;
 
       this._palette = [
         '#8b0000','#91000a','#960212','#9d0519','#a2081f','#a70d25','#ac122c','#b11732','#b61b37','#ba213e','#bf2543','#c32b48','#c7304d','#cb3453','#cf3a58','#d23f5d','#d64563','#da4967','#dd4e6c','#e05471','#e35976','#e65e7a','#e9647f','#eb6984','#ee6e88','#f0748c','#f27990','#f47e94','#f68599','#f88a9c','#fa8fa1','#fb95a4','#fd9ba8','#fea0ac','#ffa6b0','#ffacb3','#ffb1b7','#ffb7bb','#ffbdbe','#ffc4c2','#ffc9c5','#ffd0c9','#ffd4cb','#ffdbce','#ffe1d2','#ffe5d4','#ffebd7','#fff2da','#fff6dc','#fffcdf','#fbffdd','#f3fdd7','#ecfcd2','#e4facc','#def8c8','#d8f6c4','#d1f3c0','#ccf2bd','#c6efba','#c0edb6','#bbebb3','#b7e8b1','#b0e6ad','#ace4ab','#a7e1a9','#a2dea7','#9edba4','#98d9a2','#95d6a1','#90d39f','#8bd19d','#88ce9b','#83cb9a','#7fc998','#7ac696','#77c495','#73c094','#6fbd92','#6bbb91','#67b890','#64b58f','#5fb28e','#5baf8d','#57ac8c','#53aa8b','#50a78a','#4ca589','#48a288','#449e87','#3f9c87','#3c9986','#389685','#339384','#2e9184','#288e83','#248b82','#1e8882','#168581','#0c8281','#008080'
@@ -15,7 +18,7 @@ Class(App.Systems, "FrequencyD3Renderer").inherits(Serpentity.System)({
         }
       }
 
-      this._scale = chroma.scale(this._palette).domain([20, 200])
+      this._scale = chroma.scale(this._palette).domain([0, 20])
     },
 
     added : function added(engine) {
@@ -27,34 +30,38 @@ Class(App.Systems, "FrequencyD3Renderer").inherits(Serpentity.System)({
       this.analysers = null;
     },
     update : function update(dt) {
-      this._updateSvgPoints();
+      var frequencies, clusters;
+
+      frequencies = this._getFrequencies();
+      clusters = this._clusterer.cluster(frequencies, 20);
+      this._updateClusters(clusters);
     },
 
-    _updateSvgPoints : function updateSvgPoints() {
+    _updateClusters : function updateSvgPoints(clusters) {
       var circle, frequencies;
 
       this.svg = d3.select("svg");
 
-      frequencies = this._getFrequencies();
+      circle = this.svg.selectAll("circle.cluster")
+          .data(clusters);
 
-      circle = this.svg.selectAll("circle.point")
-          .data(frequencies);
-
-      circle.enter().append("circle").attr("class", "point");
+      circle.enter().append("circle").attr("class", "cluster");
       circle.exit().remove();
 
       circle
-        .attr("cx", function(d, i) { return i * 10; })
-        .attr("cy", function(d, i) { return 400-d*2; })
-        .attr("fill", function (d, i) { return this._getColor(d) }.bind(this))
-        .attr("r", 2);
+        .attr("cx", function(d) { return d.enclosingCircle().x; })
+        .attr("cy", function(d) { return d.enclosingCircle().y; })
+        .attr('stroke', function (d, i) { return this._getColor(i)}.bind(this))
+        .attr('fill', function (d, i) { return this._getTransparentColor(i)}.bind(this))
+        .attr('r', function (d) { return d.enclosingCircle().radius + 10; }.bind(this))
     },
 
     // Assume only one analyser
     _getFrequencies : function getFrequencies() {
-      var bufferLength, frequencies, analyserNode;
+      var bufferLength, frequencies, frequencyPoints, analyserNode;
 
       frequencies = [];
+      frequencyPoints = [];
 
       this.analysers.forEach(function (analyser) {
         analyserNode = analyser.analyser.analyser;
@@ -65,13 +72,25 @@ Class(App.Systems, "FrequencyD3Renderer").inherits(Serpentity.System)({
         analyserNode.getByteFrequencyData(frequencies);
       });
 
-      console.log(frequencies.length);
+      frequencies = Array.prototype.slice.call(frequencies)
+      frequencies = frequencies.map(function (frequency, i) {
+        return {
+          x: i * 10,
+          y: 400 - frequency * 2
+        };
+      });
 
       return frequencies;
     },
 
-    _getColor : function getColor(f) {
-      return this._scale(f).alpha(1).hex();
-    }
+  _getColor : function (f) {
+    var color = this._scale(f).alpha(1).rgba();
+    return "rgba(" + Math.round(color[0]) + "," + Math.round(color[1]) + "," + Math.round(color[2]) + ", " + color[3] + ")";
+  },
+
+  _getTransparentColor : function (f) {
+    var color = this._scale(f).alpha(0.2).rgba();
+    return "rgba(" + Math.round(color[0]) + "," + Math.round(color[1]) + "," + Math.round(color[2]) + ", " + color[3] + ")";
+  }
   }
 });

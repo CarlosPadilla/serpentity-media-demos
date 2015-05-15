@@ -45,7 +45,8 @@ Module("App")({
 
     // Adds the systems to serpentity so they can be used
     _initializeSystems : function initializeSystems() {
-      this.engine.addSystem(new App.Systems.FrequencyD3Renderer());
+      //this.engine.addSystem(new App.Systems.FrequencyD3Renderer());
+      this.engine.addSystem(new App.Systems.FrequencyD3ClustererRenderer());
     },
 
     // Calls to the entity factory to create all initial
