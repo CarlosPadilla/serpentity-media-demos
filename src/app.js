@@ -2,31 +2,58 @@ Module("App")({
     Components : {},
     Systems : {},
     Nodes : {},
+    _looping : false,
+    _t : 0,
+    _fps : 30,
     init : function init(config) {
       this.engine = new Serpentity();
+
+      this._t = Date.now();
+
+      this._initializeSystems();
+      this._initializeEntities();
+      this.startLoop();
     },
 
-    _preload : function preload() {
-        console.log("Preloading.");
-        this._initializeSystems();
-        this._initializeEntities();
+    pauseLoop : function pauseLoop() {
+      this._looping = false;
     },
 
-    _create : function create() {
-        console.log("Creating.");
+    startLoop : function startLoop() {
+      this._looping = true;
+      window.requestAnimationFrame(this._loop.bind(this))
     },
 
-    _update : function update(game) {
-        this.engine.update(game.time.elapsed);
+    _loop : function update(game) {
+        var interval, delta, now;
+
+        if (!this._looping) {
+          return;
+        }
+
+        window.requestAnimationFrame(this._loop.bind(this))
+        interval = 1000 / this._fps
+        now = Date.now();
+        delta = now - this._t;
+
+        if (delta > interval) {
+          this._t = now - (delta % interval);
+
+          this.engine.update(delta);
+        }
     },
 
     // Adds the systems to serpentity so they can be used
     _initializeSystems : function initializeSystems() {
+      this.engine.addSystem(new App.Systems.FrequencyLogger());
     },
 
     // Calls to the entity factory to create all initial
     // entities
     _initializeEntities : function initializeEntities() {
+      this.AudioFactory.createMicAnalyser(function (entity) {
+        console.log("Added: ", entity);
+      });
     }
 });
 
