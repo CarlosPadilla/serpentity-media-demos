@@ -21,6 +21,7 @@
     "tests"
   ],
   "dependencies": {
+    "chroma-js": "0.5.x",
     "d3": "3.5.x",
     "serpentity": "0.1.x",
     "neon": "*"
