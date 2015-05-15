@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>Serpentity Media Demos</title>
+    <!-- Dependencies -->
+    <script src="/bower_components/neon/neon.js"></script>
+    <script src="/bower_components/serpentity/dist/serpentity.js"></script>
+    <script src="/bower_components/serpentity/dist/serpentity.js"></script>
+    <script src="/bower_components/d3/d3.js"></script>
+
+    <!-- Main App -->
+    <script src="/src/app.js"></script>
+
+    <!-- Components -->
+    <script src="/src/components/analyser.js"></script>
+
+    <!-- Nodes -->
+    <script src="/src/nodes/analyser.js"></script>
+
+    <!-- Systems -->
+    <script src="/src/systems/frequency_logger.js"></script>
+
+    <!-- Factories -->
+    <script src="/src/factories/audio_factory.js"></script>
+    <script>
+      App.init();
+    </script>
+    <style>
+      body {overflow: hidden}
+    </style>
+  </head>
+  <body>
+    Serpentity Media Demos
+    <svg width="500" height="500" id="visualizer">
+    </svg>
+  </body>
+</html>

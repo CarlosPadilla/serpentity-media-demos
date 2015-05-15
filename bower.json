@@ -21,6 +21,7 @@
     "tests"
   ],
   "dependencies": {
+    "d3": "3.5.x",
     "serpentity": "0.1.x",
     "neon": "*"
   }
