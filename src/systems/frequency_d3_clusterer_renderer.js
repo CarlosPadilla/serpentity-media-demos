@@ -2,8 +2,9 @@ Class(App.Systems, "FrequencyD3ClustererRenderer").inherits(Serpentity.System)({
   prototype : {
     _palette : null,
     analysers : null,
-    resolution: 32,
+    resolution: 64,
     radius: 25,
+    shave : 0.6,
     init : function init(config) {
       var property;
 
@@ -59,7 +60,7 @@ Class(App.Systems, "FrequencyD3ClustererRenderer").inherits(Serpentity.System)({
           .data(clusters);
 
       circle.enter().append("circle").attr("class", "cluster");
-      circle.exit().remove();
+      circle.exit().attr("class", "fading");
 
       circle
         .attr("cx", function(d) { return d.enclosingCircle().x; })
@@ -71,7 +72,8 @@ Class(App.Systems, "FrequencyD3ClustererRenderer").inherits(Serpentity.System)({
 
     // Assume only one analyser
     _getFrequencies : function getFrequencies(w, h) {
-      var bufferLength, frequencies, frequencyPoints, analyserNode, finalFrequencies;
+      var bufferLength, frequencies, frequencyPoints, analyserNode, 
+          finalFrequencies, newLength;
 
       frequencies = [];
       frequencyPoints = [];
@@ -85,17 +87,19 @@ Class(App.Systems, "FrequencyD3ClustererRenderer").inherits(Serpentity.System)({
         analyserNode.getByteFrequencyData(frequencies);
       }, this);
 
-      frequencies = Array.prototype.slice.call(frequencies)
+      newLength = Math.round(frequencies.length * this.shave);
+      frequencies = Array.prototype.slice.call(frequencies, 0, newLength)
+
       finalFrequencies = frequencies.map(function (frequency, i) {
         return {
-          x: i * w / this.resolution,
+          x: i * w / Math.round(this.resolution * this.shave),
           y: h - 10 - frequency * h / 255
         };
       }, this);
 
       finalFrequencies = finalFrequencies.concat(frequencies.map(function (frequency, i) {
         return {
-          x: i * w / this.resolution,
+          x: i * w / Math.round(this.resolution * this.shave),
           y: 10 + frequency * h / 255
         };
       }, this));

@@ -7,9 +7,7 @@ Module(Clusterer.Metrics, "Clink")({
       b.children.forEach(function (pointB) {
         var d;
         d = Math.sqrt(Math.pow(pointB.x - pointA.x, 2) + Math.pow(pointB.y - pointA.y, 2));
-        if (d > distance) {
-          distance = d;
-        }
+        distance = (d < distance) ? d : distance;
       });
     });
 

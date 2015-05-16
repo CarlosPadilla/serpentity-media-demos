@@ -4,7 +4,7 @@ Module("App")({
     Nodes : {},
     _looping : false,
     _t : 0,
-    _fps : 30,
+    _fps : 25,
     init : function init(config) {
       this.engine = new Serpentity();
 
@@ -47,7 +47,9 @@ Module("App")({
     _initializeSystems : function initializeSystems() {
       this.engine.addSystem(new App.Systems.FrequencyD3Renderer());
       this.engine.addSystem(new App.Systems.FrequencyD3ClustererRenderer());
+      this.engine.addSystem(new App.Systems.FrequencyColorRenderer());
       this.engine.addSystem(new App.Systems.ConfigurationControls());
+      this.engine.addSystem(new App.Systems.Fader());
     },
 
     // Calls to the entity factory to create all initial

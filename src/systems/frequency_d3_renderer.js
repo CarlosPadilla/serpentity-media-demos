@@ -2,7 +2,8 @@ Class(App.Systems, "FrequencyD3Renderer").inherits(Serpentity.System)({
   prototype : {
     _palette : null,
     analysers : null,
-    resolution: 32,
+    resolution: 64,
+    shave : 0.6,
     init : function init(config) {
       var property;
 
@@ -47,7 +48,7 @@ Class(App.Systems, "FrequencyD3Renderer").inherits(Serpentity.System)({
       circle.exit().remove();
 
       circle
-        .attr("cx", function(d, i) { return i * w / this.resolution; }.bind(this))
+        .attr("cx", function(d, i) { return i * w / Math.round(this.resolution * this.shave); }.bind(this))
         .attr("cy", function(d, i) { return h - 10 - d * h / 255; })
         .attr("fill", function (d, i) { return this._getColor(d) }.bind(this))
         .attr("r", 2);
@@ -59,7 +60,7 @@ Class(App.Systems, "FrequencyD3Renderer").inherits(Serpentity.System)({
       circle2.exit().remove();
 
       circle2
-        .attr("cx", function(d, i) { return i * w / this.resolution; }.bind(this))
+        .attr("cx", function(d, i) { return i * w / Math.round(this.resolution * this.shave); }.bind(this))
         .attr("cy", function(d, i) { return 10 + d * h / 255; })
         .attr("fill", function (d, i) { return this._getColor(d) }.bind(this))
         .attr("r", 2);
@@ -67,7 +68,7 @@ Class(App.Systems, "FrequencyD3Renderer").inherits(Serpentity.System)({
 
     // Assume only one analyser
     _getFrequencies : function getFrequencies(w, h) {
-      var bufferLength, frequencies, analyserNode;;
+      var bufferLength, frequencies, analyserNode, newLength;
 
       frequencies = [];
 
@@ -84,6 +85,9 @@ Class(App.Systems, "FrequencyD3Renderer").inherits(Serpentity.System)({
         frequencies = new Uint8Array(bufferLength);
         analyserNode.getByteFrequencyData(frequencies);
       }, this);
+
+      newLength = Math.round(frequencies.length * this.shave);
+      frequencies = Array.prototype.slice.call(frequencies, 0, newLength)
 
       return frequencies;
     },
