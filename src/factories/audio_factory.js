@@ -25,6 +25,10 @@ Module(App, "AudioFactory")({
       analyser : analyser
     }));
 
+    entity.addComponent(new App.Components.Configuration({
+      clusterRadius: 30
+    }));
+
     App.engine.addEntity(entity);
     callback(entity);
   },

@@ -2,6 +2,8 @@ Class(App.Systems, "FrequencyD3ClustererRenderer").inherits(Serpentity.System)({
   prototype : {
     _palette : null,
     analysers : null,
+    resolution: 32,
+    radius: 25,
     init : function init(config) {
       var property;
 
@@ -23,24 +25,35 @@ Class(App.Systems, "FrequencyD3ClustererRenderer").inherits(Serpentity.System)({
 
     added : function added(engine) {
       this.svg = d3.select("svg");
-      this.analysers = engine.getNodes(App.Nodes.Analyser);
+      this.analysers = engine.getNodes(App.Nodes.ConfigurableAnalyser);
     },
     removed : function removed(engine) {
       this.svg = null;
       this.analysers = null;
     },
     update : function update(dt) {
-      var frequencies, clusters;
+      var frequencies, radius, clusters, w, h, config;
 
-      frequencies = this._getFrequencies();
-      clusters = this._clusterer.cluster(frequencies, 20);
+      this.svg = d3.select("svg");
+
+      w = parseInt(this.svg.style("width")) / 5;
+      h = parseInt(this.svg.style("height"));
+
+      radius = this.radius;
+      if (this.analysers[0]) {
+        config = this.analysers[0].configuration.config;
+        if (config) {
+          radius = config.clusterRadius;
+        }
+      }
+
+      frequencies = this._getFrequencies(w, h);
+      clusters = this._clusterer.cluster(frequencies, w / radius);
       this._updateClusters(clusters);
     },
 
     _updateClusters : function updateSvgPoints(clusters) {
-      var circle, frequencies;
-
-      this.svg = d3.select("svg");
+      var frequencies, clusters, circle, frequencies;
 
       circle = this.svg.selectAll("circle.cluster")
           .data(clusters);
@@ -57,8 +70,8 @@ Class(App.Systems, "FrequencyD3ClustererRenderer").inherits(Serpentity.System)({
     },
 
     // Assume only one analyser
-    _getFrequencies : function getFrequencies() {
-      var bufferLength, frequencies, frequencyPoints, analyserNode;
+    _getFrequencies : function getFrequencies(w, h) {
+      var bufferLength, frequencies, frequencyPoints, analyserNode, finalFrequencies;
 
       frequencies = [];
       frequencyPoints = [];
@@ -66,21 +79,28 @@ Class(App.Systems, "FrequencyD3ClustererRenderer").inherits(Serpentity.System)({
       this.analysers.forEach(function (analyser) {
         analyserNode = analyser.analyser.analyser;
 
-        analyserNode.fftSize = 128;
+        analyserNode.fftSize = this.resolution * 2;
         bufferLength = analyserNode.frequencyBinCount;
         frequencies = new Uint8Array(bufferLength);
         analyserNode.getByteFrequencyData(frequencies);
-      });
+      }, this);
 
       frequencies = Array.prototype.slice.call(frequencies)
-      frequencies = frequencies.map(function (frequency, i) {
+      finalFrequencies = frequencies.map(function (frequency, i) {
         return {
-          x: i * 10,
-          y: 400 - frequency * 2
+          x: i * w / this.resolution,
+          y: h - 10 - frequency * h / 255
         };
-      });
+      }, this);
 
-      return frequencies;
+      finalFrequencies = finalFrequencies.concat(frequencies.map(function (frequency, i) {
+        return {
+          x: i * w / this.resolution,
+          y: 10 + frequency * h / 255
+        };
+      }, this));
+
+      return finalFrequencies;
     },
 
   _getColor : function (f) {

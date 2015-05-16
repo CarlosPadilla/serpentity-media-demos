@@ -25,14 +25,18 @@
 
     <!-- Components -->
     <script src="/src/components/analyser.js"></script>
+    <script src="/src/components/configuration.js"></script>
 
     <!-- Nodes -->
     <script src="/src/nodes/analyser.js"></script>
+    <script src="/src/nodes/configurable.js"></script>
+    <script src="/src/nodes/configurable_analyser.js"></script>
 
     <!-- Systems -->
     <script src="/src/systems/frequency_logger.js"></script>
     <script src="/src/systems/frequency_d3_renderer.js"></script>
     <script src="/src/systems/frequency_d3_clusterer_renderer.js"></script>
+    <script src="/src/systems/configuration_controls.js"></script>
 
     <!-- Factories -->
     <script src="/src/factories/audio_factory.js"></script>
@@ -41,11 +45,11 @@
     </script>
     <style>
       body {overflow: hidden}
+      svg {width: 500%; height: auto;}
     </style>
   </head>
   <body>
-    Serpentity Media Demos
-    <svg width="500" height="500" id="visualizer">
+    <svg width="1280" height="720" id="visualizer">
     </svg>
   </body>
 </html>

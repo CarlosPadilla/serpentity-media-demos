@@ -2,6 +2,7 @@ Class(App.Systems, "FrequencyD3Renderer").inherits(Serpentity.System)({
   prototype : {
     _palette : null,
     analysers : null,
+    resolution: 32,
     init : function init(config) {
       var property;
 
@@ -20,7 +21,7 @@ Class(App.Systems, "FrequencyD3Renderer").inherits(Serpentity.System)({
 
     added : function added(engine) {
       this.svg = d3.select("svg");
-      this.analysers = engine.getNodes(App.Nodes.Analyser);
+      this.analysers = engine.getNodes(App.Nodes.ConfigurableAnalyser);
     },
     removed : function removed(engine) {
       this.svg = null;
@@ -31,11 +32,13 @@ Class(App.Systems, "FrequencyD3Renderer").inherits(Serpentity.System)({
     },
 
     _updateSvgPoints : function updateSvgPoints() {
-      var circle, frequencies;
+      var circle, circle2, frequencies, w, h, inverseFrequencies;
 
       this.svg = d3.select("svg");
+      w = parseInt(this.svg.style("width")) / 5;
+      h = parseInt(this.svg.style("height"));
 
-      frequencies = this._getFrequencies();
+      frequencies = this._getFrequencies(w, h);
 
       circle = this.svg.selectAll("circle.point")
           .data(frequencies);
@@ -44,28 +47,43 @@ Class(App.Systems, "FrequencyD3Renderer").inherits(Serpentity.System)({
       circle.exit().remove();
 
       circle
-        .attr("cx", function(d, i) { return i * 10; })
-        .attr("cy", function(d, i) { return 400-d*2; })
+        .attr("cx", function(d, i) { return i * w / this.resolution; }.bind(this))
+        .attr("cy", function(d, i) { return h - 10 - d * h / 255; })
+        .attr("fill", function (d, i) { return this._getColor(d) }.bind(this))
+        .attr("r", 2);
+
+      circle2 = this.svg.selectAll("circle.point2")
+          .data(frequencies);
+
+      circle2.enter().append("circle").attr("class", "point2");
+      circle2.exit().remove();
+
+      circle2
+        .attr("cx", function(d, i) { return i * w / this.resolution; }.bind(this))
+        .attr("cy", function(d, i) { return 10 + d * h / 255; })
         .attr("fill", function (d, i) { return this._getColor(d) }.bind(this))
         .attr("r", 2);
     },
 
     // Assume only one analyser
-    _getFrequencies : function getFrequencies() {
-      var bufferLength, frequencies, analyserNode;
+    _getFrequencies : function getFrequencies(w, h) {
+      var bufferLength, frequencies, analyserNode;;
 
       frequencies = [];
+
+      if (this.analysers[0] && this.analysers[0].configuration.config && 
+          !this.analysers[0].configuration.config.showPoints) {
+        return [];
+      }
 
       this.analysers.forEach(function (analyser) {
         analyserNode = analyser.analyser.analyser;
 
-        analyserNode.fftSize = 128;
+        analyserNode.fftSize = this.resolution * 2;
         bufferLength = analyserNode.frequencyBinCount;
         frequencies = new Uint8Array(bufferLength);
         analyserNode.getByteFrequencyData(frequencies);
-      });
-
-      console.log(frequencies.length);
+      }, this);
 
       return frequencies;
     },
