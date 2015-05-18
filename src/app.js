@@ -45,9 +45,9 @@ Module("App")({
 
     // Adds the systems to serpentity so they can be used
     _initializeSystems : function initializeSystems() {
+      this.engine.addSystem(new App.Systems.FrequencyColorRenderer());
       this.engine.addSystem(new App.Systems.FrequencyD3Renderer());
       this.engine.addSystem(new App.Systems.FrequencyD3ClustererRenderer());
-      this.engine.addSystem(new App.Systems.FrequencyColorRenderer());
       this.engine.addSystem(new App.Systems.ConfigurationControls());
       this.engine.addSystem(new App.Systems.Fader());
     },

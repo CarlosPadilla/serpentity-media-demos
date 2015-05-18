@@ -1,3 +1,5 @@
+'use strict';
+
 Class(App.Systems, "FrequencyColorRenderer").inherits(Serpentity.System)({
   prototype : {
     _palette : null,
@@ -19,10 +21,10 @@ Class(App.Systems, "FrequencyColorRenderer").inherits(Serpentity.System)({
     },
 
     added : function added(engine) {
-      this.svg = d3.select("svg");
       this.analysers = engine.getNodes(App.Nodes.ConfigurableAnalyser);
     },
     removed : function removed(engine) {
+      this.svg.select("rect.color-frequency").remove();
       this.svg = null;
       this.analysers = null;
     },
@@ -31,15 +33,17 @@ Class(App.Systems, "FrequencyColorRenderer").inherits(Serpentity.System)({
     },
 
     _renderColor : function renderColor() {
-      var frequencies, average, size, bandSize, histogram, averages;
+      var rect, frequencies, average, size, bandSize, histogram, averages, max;
 
       this.svg = d3.select("svg");
+
+      rect = this.svg.select('rect.color-frequency');
+
 
       frequencies = this._getFrequencies();
       size = frequencies.length;
       bandSize = Math.round(size / this._palette.length);
 
-      frequencies = Array.prototype.slice.call(frequencies);
       histogram = frequencies.reduce(function (mem, frequency, i) {
         var index;
 
@@ -51,10 +55,15 @@ Class(App.Systems, "FrequencyColorRenderer").inherits(Serpentity.System)({
         return mem;
       }, []);
 
+
       averages = histogram.map(function (bar) {
         return bar.value / bar.length;
       });
 
+      max = Math.max.apply(null, averages);
+      max = averages.indexOf(max);
+
+      rect.attr('fill', this._getColor(max));
     },
 
     // Assume only one analyser
@@ -62,11 +71,6 @@ Class(App.Systems, "FrequencyColorRenderer").inherits(Serpentity.System)({
       var bufferLength, frequencies, analyserNode, newLength;
 
       frequencies = [];
-
-      if (this.analysers[0] && this.analysers[0].configuration.config && 
-          !this.analysers[0].configuration.config.showPoints) {
-        return [];
-      }
 
       this.analysers.forEach(function (analyser) {
         analyserNode = analyser.analyser.analyser;
@@ -84,7 +88,7 @@ Class(App.Systems, "FrequencyColorRenderer").inherits(Serpentity.System)({
     },
 
     _getColor : function getColor(f) {
-      return this._scale(f).alpha(1).hex();
+      return this._scale(f).alpha(0.2).css();
     }
   }
 });

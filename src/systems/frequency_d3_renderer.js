@@ -36,7 +36,7 @@ Class(App.Systems, "FrequencyD3Renderer").inherits(Serpentity.System)({
       var circle, circle2, frequencies, w, h, inverseFrequencies;
 
       this.svg = d3.select("svg");
-      w = parseInt(this.svg.style("width")) / 5;
+      w = parseInt(this.svg.style("width"));
       h = parseInt(this.svg.style("height"));
 
       frequencies = this._getFrequencies(w, h);
