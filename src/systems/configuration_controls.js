@@ -3,6 +3,9 @@ Class(App.Systems, "ConfigurationControls").inherits(Serpentity.System)({
     gp: null,
     config: null,
     _pointToggleLock: false,
+    _switchColorLock: false,
+    _resetColorLock: false,
+    _backgroundToggleLock: false,
     _radiusMax: 5,
     _baseRadius: 15,
     _baseFade: -500,
@@ -63,6 +66,49 @@ Class(App.Systems, "ConfigurationControls").inherits(Serpentity.System)({
           }
         } else {
           this._pointToggleLock = false;
+        }
+
+        // switch Color
+        if (this.gp.buttons[1].pressed) {
+          if (!this._switchColorLock) {
+            this._switchColorLock = true;
+
+            if (!this.gp.buttons[6].pressed) {
+              this.config.switchColor = true;
+            }
+
+            if (!this.gp.buttons[7].pressed) {
+              this.config.switchColorBg = true;
+            }
+          }
+        } else {
+          this._switchColorLock = false;
+        }
+
+        // toggle point rendering;
+        if (this.gp.buttons[2].pressed) {
+          if (!this._backgroundToggleLock) {
+            this._backgroundToggleLock = true;
+            this.config.showBackground = !this.config.showBackground;
+          }
+        } else {
+          this._backgroundToggleLock = false;
+        }
+
+        // switch Color
+        if (this.gp.buttons[3].pressed) {
+          if (!this._resetColorLock) {
+            this._resetColorLock = true;
+            if (!this.gp.buttons[6].pressed) {
+              this.config.resetColor = true;
+            }
+
+            if (!this.gp.buttons[7].pressed) {
+              this.config.resetColorBg = true;
+            }
+          }
+        } else {
+          this._resetColorLock = false;
         }
       }
     }

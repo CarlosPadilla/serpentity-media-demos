@@ -26,7 +26,7 @@ Module(App, "AudioFactory")({
     }));
 
     entity.addComponent(new App.Components.Configuration({
-      clusterRadius: 30
+      config : {}
     }));
 
     App.engine.addEntity(entity);
