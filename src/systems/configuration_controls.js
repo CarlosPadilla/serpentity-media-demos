@@ -56,8 +56,6 @@ Class(App.Systems, "ConfigurationControls").inherits(Serpentity.System)({
         fadeY = this._fadeMax + this.gp.axes[3] * this._fadeMax;
         this.config.clusterFade = this._baseFade + fadeX + fadeY;
 
-        console.log(this.config.clusterFade);
-
         // toggle point rendering;
         if (this.gp.buttons[0].pressed) {
           if (!this._pointToggleLock) {
