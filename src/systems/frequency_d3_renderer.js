@@ -55,6 +55,9 @@ Class(App.Systems, "FrequencyD3Renderer").inherits(Serpentity.System)({
         .attr("fill", function (d, i) { return this._getColor(d) }.bind(this))
         .attr("r", 2);
 
+      // All that repeating for a different height function.
+      // This can be implemented way better >_>
+
       circle2 = this.svg.selectAll("circle.point2")
           .data(frequencies);
 
