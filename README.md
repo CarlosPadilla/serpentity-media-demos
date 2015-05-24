@@ -65,3 +65,5 @@ Systems consume lists of nodes
 * **Fader** fades out fadable svg objects
 * **FrequencyD3ClustererRenderer** renders clusters with d3
 * **FrequencyD3Renderer** renders frequency points with d3
+* **FrequencyColorRenderer** renders a color for a given frequency
+  distribution
