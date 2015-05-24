@@ -34,3 +34,34 @@ L2 = Lock Cluster Color
 
 LS = Control cluster size
 RS = Control cluster lifetime
+
+## Structure
+
+This project uses the serpentity entity framework and is separated in
+components, nodes and systems:
+
+### Components
+
+Components provide properties
+
+* **Analyser** a node that provides an `analyser` object.
+* **Configuration** a node that provides a `configuration` object.
+
+### Nodes
+
+Nodes are combinations of components
+
+* **Analyser** a node consisting of only the `Analyser` component.
+* **Configurable** a node consisting of only the `Configuration`
+  component.
+* **ConfigurableAnalyser** a node that has an `Analyser` and a
+  `Configuration` component.
+
+### Systems
+
+Systems consume lists of nodes 
+
+* **ConfigurationControls** maps gamepad to configurations
+* **Fader** fades out fadable svg objects
+* **FrequencyD3ClustererRenderer** renders clusters with d3
+* **FrequencyD3Renderer** renders frequency points with d3
