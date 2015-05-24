@@ -1,3 +1,5 @@
+'use strict';
+
 Class(App.Systems, "FrequencyD3Renderer").inherits(Serpentity.System)({
   prototype : {
     _palette : null,

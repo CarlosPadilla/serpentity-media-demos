@@ -1,3 +1,5 @@
+'use strict';
+
 Class(App.Systems, "Fader").inherits(Serpentity.System)({
   prototype : {
     _palette : null,
@@ -11,7 +13,7 @@ Class(App.Systems, "Fader").inherits(Serpentity.System)({
       this.configurables = null;
     },
     update : function update(dt) {
-      var svg, faders, lifetime, system;
+      var svg, faders, lifetime, system, config;
 
       system = this;
 

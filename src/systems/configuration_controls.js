@@ -1,3 +1,5 @@
+'use strict';
+
 Class(App.Systems, "ConfigurationControls").inherits(Serpentity.System)({
   prototype : {
     gp: null,

@@ -1,3 +1,5 @@
+'use strict';
+
 Module("App")({
     Components : {},
     Systems : {},

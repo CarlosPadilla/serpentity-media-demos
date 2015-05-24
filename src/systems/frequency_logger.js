@@ -1,3 +1,5 @@
+'use strict';
+
 Class(App.Systems, "FrequencyLogger").inherits(Serpentity.System)({
   prototype : {
     analysers : null,
